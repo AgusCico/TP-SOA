@@ -74,8 +74,6 @@ int distanciaAuto(int triggerPin, int echoPin)
   return pulseIn(echoPin, HIGH);
 }
 
-void 
-
 void abrirBarrera()
 {
   servo_9.write(90);
@@ -162,6 +160,7 @@ void setup()
   servo_9.write(90);
   //delay(5000);
   Serial.println("listo");
+  estado_actual = ESTADO_INICIAL;
 }
 
 bool timerBarrera()
@@ -229,15 +228,7 @@ void fsm()
   switch(estado_actual)
   {
     case ESTADO_INICIAL:
-      switch(evento_actual)
-      {
-        case :
-
-          break;
-
-        default:
-          break;
-      }
+      estado_actual = ESTADO_ESPERANDO_AUTO;
       break;
 
     case ESTADO_ESPERANDO_AUTO:
@@ -256,10 +247,10 @@ void fsm()
           break;
 
         case EVENTO_DEJA_DETECTAR_AUTO_ESTACIONADO:
-				  Serial.println("-----------------------------------------------------");
-				  Serial.println("Estado ESTADO_ESPERANDO_AUTO...");
-				  Serial.println("Evento EVENTO_DEJA_DETECTAR_AUTO_ESTACIONADO...");
-				  Serial.println("-----------------------------------------------------");
+          Serial.println("-----------------------------------------------------");
+          Serial.println("Estado ESTADO_ESPERANDO_AUTO...");
+          Serial.println("Evento EVENTO_DEJA_DETECTAR_AUTO_ESTACIONADO...");
+          Serial.println("-----------------------------------------------------");
           actualizar_leds();
           estado_actual = ESTADO_AUTO_SALIENDO;
           break;
@@ -274,11 +265,21 @@ void fsm()
       switch(evento_actual)
       {
         case EVENTO_DETECTA_AUTO:
-
+          Serial.println("-----------------------------------------------------");
+          Serial.println("Estado ESTADO_ATIENDE_AUTO...");
+          Serial.println("Evento EVENTO_DETECTA_AUTO...");
+          Serial.println("-----------------------------------------------------"); 
+          cerrarBarrera();
+          estado_actual = ESTADO_INGRESO_AUTO;
           break;
 
         case EVENTO_TIMEOUT_BARRERA:
-
+          Serial.println("-----------------------------------------------------");
+          Serial.println("Estado ESTADO_ATIENDE_AUTO...");
+          Serial.println("Evento EVENTO_TIMEOUT_BARRERA...");
+          Serial.println("-----------------------------------------------------"); 
+          cerrarBarrera();
+          estado_actual = ESTADO_ESPERANDO_AUTO;
           break;
 
         default:
@@ -293,15 +294,30 @@ void fsm()
       switch(evento_actual)
       {
         case EVENTO_HAY_LUGAR:
+          Serial.println("-----------------------------------------------------");
+          Serial.println("Estado ESTADO_INGRESO_AUTO...");
+          Serial.println("Evento EVENTO_HAY_LUGAR...");
+          Serial.println("-----------------------------------------------------");
+          actualizar_leds();
+          estado_actual = ESTADO_ESPERANDO_AUTO;
 
           break;
         
         case EVENTO_NO_HAY_LUGAR:
-
+          Serial.println("-----------------------------------------------------");
+          Serial.println("Estado ESTADO_INGRESO_AUTO...");
+          Serial.println("Evento EVENTO_NO_HAY_LUGAR...");
+          Serial.println("-----------------------------------------------------");
+          estado_actual = ESTADO_AUTO_SALIENDO;
           break;
 
         case EVENTO_NO_DETECTA_LUZ_EXTERIOR:
-
+          Serial.println("-----------------------------------------------------");
+          Serial.println("Estado ESTADO_INGRESO_AUTO...");
+          Serial.println("Evento EVENTO_NO_DETECTA_LUZ_EXTERIOR...");
+          Serial.println("-----------------------------------------------------"); 
+          encenderLuzNoche();
+          estado_actual = ESTADO_INGRESO_AUTO;
           break;
 
         default:
@@ -314,7 +330,12 @@ void fsm()
       switch(evento_actual)
       {
         case EVENTO_DEJA_DETECTAR_AUTO_ESTACIONADO:
-
+          Serial.println("-----------------------------------------------------");
+          Serial.println("Estado ESTADO_ESTACIONAMIENTO_OCUPADO...");
+          Serial.println("Evento EVENTO_DEJA_DETECTAR_AUTO_ESTACIONADO...");
+          Serial.println("-----------------------------------------------------"); 
+          actualizar_leds();
+          estado_actual = ESTADO_AUTO_SALIENDO;
           break;
 
         default:
@@ -328,15 +349,28 @@ void fsm()
       switch(evento_actual)
       {
         case EVENTO_TIMEOUT_SLOT_ESTACIONAMIENTO:
-
+          Serial.println("-----------------------------------------------------");
+          Serial.println("Estado ESTADO_AUTO_SALIENDO...");
+          Serial.println("Evento EVENTO_TIMEOUT_SLOT_ESTACIONAMIENTO...");
+          Serial.println("-----------------------------------------------------");
+          estado_actual = ESTADO_ESPERANDO_AUTO; 
           break;
 
         case EVENTO_DETECTA_AUTO:
-
+          Serial.println("-----------------------------------------------------");
+          Serial.println("Estado ESTADO_AUTO_SALIENDO...");
+          Serial.println("Evento EVENTO_DETECTA_AUTO...");
+          Serial.println("-----------------------------------------------------");
+          estado_actual = ESTADO_INGRESO_AUTO; 
           break;
 
         case EVENTO_NO_DETECTA_LUZ_EXTERIOR:
-
+          Serial.println("-----------------------------------------------------");
+          Serial.println("Estado ESTADO_AUTO_SALIENDO...");
+          Serial.println("Evento EVENTO_NO_DETECTA_LUZ_EXTERIOR...");
+          Serial.println("-----------------------------------------------------"); 
+          encenderLuzNoche();
+          estado_actual = ESTADO_AUTO_SALIENDO;
           break;
 
         default:
@@ -356,15 +390,5 @@ void fsm()
 
 void loop()
 {
-  fsm();
-  //Serial.println(entradaLuz);
-  boton=digitalRead(BOTON_PULSAR);  //se asigna a la variable “boton” el valor del pin 12
-  // digitalWrite(LED_BOTON,boton);  
-  
-
-  abrirBarrera();
-  detectaPresencia(TRIGGER_SENSOR_ESTACION1, ECHO_SENSOR_ESTACION1, LED_HAY_AUTO_ESTACION1);
-  detectaPresencia(TRIGGER_SENSOR_ESTACION2, ECHO_SENSOR_ESTACION2, LED_HAY_AUTO_ESTACION2);
-  encenderLuzNoche();
-  
+  fsm();  
 }
