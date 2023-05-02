@@ -16,7 +16,7 @@
 
 #define CANTIDAD_LUZ_MINIMA 300
 #define BOTON_PULSAR 2
-#define SEÑAL_SERVO 3
+#define SENIAL_SERVO 3
 
 #define ESTADO_INICIAL 1
 #define ESTADO_ESPERANDO_AUTO 2
@@ -115,17 +115,27 @@ void setup()
   // pinMode(LED_BOTON, OUTPUT); // se declara el pin 2 como salida
   pinMode(BOTON_PULSAR,INPUT); // se declara el pin 12 como entrada
   // pinMode(LED_BUILTIN, OUTPUT);
-  servo_9.attach(SEÑAL_SERVO);
+  servo_9.attach(SENIAL_SERVO);
   servo_9.write(90);
   //delay(5000);
-  Serial.println("listo");
+  // Serial.println("listo");
 }
 
 
 void tomar_evento()
 {
   
-  
+  int entradaLuz;
+  entradaLuz=analogRead(A5);
+
+  if(entradaLuz < CANTIDAD_LUZ)
+  {
+    // PRENDO LUZ
+  }
+  else
+  {
+    // APAGO LUZ
+  }
 
 }
 
