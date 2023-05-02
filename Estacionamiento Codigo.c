@@ -1,6 +1,6 @@
 #include <Servo.h>
 
-#define TIEMPO_MAXIMO 19350 //Tiempo maximo que puede durar el ECHO
+#define TIEMPO_MAXIMO_ECHO 19350 //Tiempo maximo que puede durar el ECHO
 #define	LED_HAY_AUTO_ESTACION1 7
 #define LED_HAY_AUTO_ESTACION2 5
 #define LED_LUZ_EXTERIOR 4
@@ -16,7 +16,10 @@
 
 #define CANTIDAD_LUZ_MINIMA 300
 #define BOTON_PULSAR 2
-#define SEÑAL_SERVO 3
+#define SENIAL_SERVO 3
+
+#define BARRERA_BAJA 90
+#define BARRERA_ALTA 0
 
 #define ESTADO_INICIAL 1
 #define ESTADO_ESPERANDO_AUTO 2
@@ -38,9 +41,7 @@
 // #define constantes de trabajo
 #define TIEMPO_MAX_MILIS 900
 
-//int pos = 0;
 Servo servo_9;
-//int entradaLuz;
 
 int estado_actual;
 int evento_actual;
@@ -76,13 +77,13 @@ int distanciaAuto(int triggerPin, int echoPin)
 
 void abrirBarrera()
 {
-  servo_9.write(90);
+  servo_9.write(BARRERA_ALTA);
   //delay(1000);
 }
 
 void cerrarBarrera()
 {
-  servo_9.write(0);
+  servo_9.write(BARRERA_BAJA);
   //delay(1000);
 }
 
@@ -91,7 +92,7 @@ bool detectaPresencia(int trigger, int echo)
   bool detectaPresencia;
   hayAuto = distanciaAuto(trigger,echo);
   
-  if(hayAuto >= TIEMPO_MAXIMO)
+  if(hayAuto >= TIEMPO_MAXIMO_ECHO)
   {
     detectaPresencia = false;
   }
@@ -156,8 +157,8 @@ void setup()
   // pinMode(LED_BOTON, OUTPUT); // se declara el pin 2 como salida
   pinMode(BOTON_PULSAR,INPUT); // se declara el pin 12 como entrada
   // pinMode(LED_BUILTIN, OUTPUT);
-  servo_9.attach(SEÑAL_SERVO);
-  servo_9.write(90);
+  servo_9.attach(SENIAL_SERVO);
+  servo_9.write(BARRERA_BAJA);
   //delay(5000);
   Serial.println("listo");
   estado_actual = ESTADO_INICIAL;
