@@ -1,10 +1,16 @@
 #include <Servo.h>
 
-#define TIEMPO_MAXIMO_ECHO 19350 //Tiempo maximo que puede durar el ECHO
-#define	LED_HAY_AUTO_ESTACION1 7
+
+#define TIMEOUT_BARRERA_MILIS 5000
+#define TIEMPO_MAXIMO_ECHO 19000 //Tiempo maximo que puede durar el ECHO
+
+
+#define BARRERA_BAJA 90
+#define BARRERA_ALTA 0
+
+#define	LED_HAY_AUTO_ESTACION1 6
 #define LED_HAY_AUTO_ESTACION2 5
 #define LED_LUZ_EXTERIOR 4
-// #define LED_BOTON 2
 
 #define TRIGGER_SENSOR_ESTACION1 12
 #define TRIGGER_SENSOR_ESTACION2 10
@@ -12,7 +18,7 @@
 
 #define ECHO_SENSOR_ESTACION1 11
 #define ECHO_SENSOR_ESTACION2 9
-#define ECHO_SENSOR_BARRERA 6
+#define ECHO_SENSOR_BARRERA 7
 
 #define CANTIDAD_LUZ_MINIMA 300
 #define BOTON_PULSAR 2
@@ -27,7 +33,6 @@
 #define ESTADO_AUTO_SALIENDO 4
 #define ESTADO_ATIENDE_AUTO 5
 #define ESTADO_INGRESO_AUTO 6
-
 // #define EVENTO_DETECTA_LUZ_EXTERIOR 
 #define EVENTO_NO_DETECTA_LUZ_EXTERIOR 10
 #define EVENTO_DEJA_DETECTAR_AUTO_ESTACIONADO 11
@@ -37,11 +42,13 @@
 #define EVENTO_TIMEOUT_SLOT_ESTACIONAMIENTO 15
 #define EVENTO_NO_HAY_LUGAR 16
 #define EVENTO_HAY_LUGAR 17
-
 // #define constantes de trabajo
 #define TIEMPO_MAX_MILIS 900
+#define CANTIDAD_SLOT_DISPONIBLE 2
 
+//int pos = 0;
 Servo servo_9;
+//int entradaLuz;
 
 int estado_actual;
 int evento_actual;
@@ -87,23 +94,22 @@ void cerrarBarrera()
   //delay(1000);
 }
 
-bool detectaPresencia(int trigger, int echo)
+
+bool detectarPresencia(int trigger, int echo)
 {
-  bool detectaPresencia;
-  hayAuto = distanciaAuto(trigger,echo);
-  
+  int hayAuto = distanciaAuto(trigger,echo);
   if(hayAuto >= TIEMPO_MAXIMO_ECHO)
   {
-    detectaPresencia = false;
+    return false;
   }
   else
   {
-    detectaPresencia = true;
+  	return true;  
   }
-  return detectaPresencia;
 }
 
-bool saleAuto()
+
+bool obtenerSaleAuto()
 {
   bool saleAuto = false;
   bool detectaPresencia = false;
@@ -111,7 +117,7 @@ bool saleAuto()
 
   if(!slot1_libre)
   {
-    detectaPresencia = detectaPresencia(TRIGGER_SENSOR_ESTACION1, ECHO_SENSOR_ESTACION1);
+    detectaPresencia = detectarPresencia(TRIGGER_SENSOR_ESTACION1, ECHO_SENSOR_ESTACION1);
     if(!detectaPresencia)
     {
       slot1_libre = true;
@@ -121,7 +127,7 @@ bool saleAuto()
 
     if(!slot2_libre)
   {
-    detectaPresencia = detectaPresencia(TRIGGER_SENSOR_ESTACION2, ECHO_SENSOR_ESTACION2);
+    detectaPresencia = detectarPresencia(TRIGGER_SENSOR_ESTACION2, ECHO_SENSOR_ESTACION2);
     if(!detectaPresencia)
     {
       slot2_libre = true;
@@ -131,13 +137,40 @@ bool saleAuto()
 
   return saleAuto;
 }
+bool obtenerEntraAuto()
+{
+  bool entraAuto = false;
+  bool detectaPresencia = false;
 
+
+  if(slot1_libre)
+  {
+    detectaPresencia = detectarPresencia(TRIGGER_SENSOR_ESTACION1, ECHO_SENSOR_ESTACION1);
+    if(detectaPresencia)
+    {
+      slot1_libre = false;
+      entraAuto = true;
+    }
+  }
+
+    if(slot2_libre)
+  {
+    detectaPresencia = detectarPresencia(TRIGGER_SENSOR_ESTACION2, ECHO_SENSOR_ESTACION2);
+    if(detectaPresencia)
+    {
+      slot2_libre = false;
+      entraAuto = true;
+    }
+  }
+
+  return entraAuto;
+}
 void encenderLuzNoche()
 {
   int entradaLuz;
   entradaLuz=analogRead(A5);
 
-  if(entradaLuz < CANTIDAD_LUZ)
+  if(entradaLuz < CANTIDAD_LUZ_MINIMA)
   {
     digitalWrite(LED_LUZ_EXTERIOR,HIGH);
   }
@@ -164,7 +197,7 @@ void setup()
   estado_actual = ESTADO_INICIAL;
 }
 
-bool timerBarrera()
+bool obtenerTimerBarrera()
 {
   // Toma el tiempo en el que se abrió la barrera.
   tiempo_anterior = millis();
@@ -175,20 +208,28 @@ bool timerBarrera()
 void tomar_evento()
 {
   bool saleAuto;
+  bool entraAuto;
 
-  //Analizamos pulsador
-  boton=digitalRead(BOTON_PULSAR);  //se asigna a la variable “boton” el valor del pin 12
-  if(boton)
-  {
-    evento_actual = EVENTO_DETECTA_PULSADOR;
-    Serial.println("Se presiona pulsador, Evento EVENTO_DETECTA_PULSADOR");
-  }  
+ 
 
   //Validamos si un auto está saliendo 
-  saleAuto = saleAuto();
+  saleAuto = obtenerSaleAuto();
   if(saleAuto)
   {
     evento_actual = EVENTO_DEJA_DETECTAR_AUTO_ESTACIONADO;
+  }
+  entraAuto = obtenerEntraAuto();
+  if(entraAuto)
+  {
+    evento_actual = EVENTO_HAY_LUGAR;
+  }
+  if(!entraAuto && !saleAuto) 
+  {
+    evento_actual = EVENTO_TIMEOUT_SLOT_ESTACIONAMIENTO;
+  } 
+  if(!slot1_libre && !slot2_libre)
+  {
+    evento_actual = EVENTO_NO_HAY_LUGAR;
   }
 
   //Validamos si hay presencia en la barrera
@@ -196,13 +237,26 @@ void tomar_evento()
   {
     // Toma el tiempo actual.
     tiempo_actual = millis();
-    detectaPresencia(TRIGGER_SENSOR_BARRERA, ECHO_SENSOR_BARRERA);
-    if((tiempo_actual-tiempo_anterior) > TIEMPO_MAX_MILIS )
+    bool prescenciaBarrera = detectarPresencia(TRIGGER_SENSOR_BARRERA, ECHO_SENSOR_BARRERA);
+    
+    if(prescenciaBarrera)
+    {
+      evento_actual = EVENTO_DETECTA_AUTO;
+      timerBarrera = false;
+    }
+    else if((tiempo_actual-tiempo_anterior) > TIEMPO_MAX_MILIS )
     {
       evento_actual = EVENTO_TIMEOUT_BARRERA;
+      timerBarrera = false;
     }
   }
-
+  //Analizamos pulsador
+  boton=digitalRead(BOTON_PULSAR);  //se asigna a la variable “boton” el valor del pin 12
+  if(boton)
+  {
+    evento_actual = EVENTO_DETECTA_PULSADOR;
+    Serial.println("Se presiona pulsador, Evento EVENTO_DETECTA_PULSADOR");
+  } 
 
 }
 
@@ -229,6 +283,10 @@ void fsm()
   switch(estado_actual)
   {
     case ESTADO_INICIAL:
+      Serial.println("-----------------------------------------------------");
+      Serial.println("Estado ESTADO_INICIAL...");
+      Serial.println("Evento EVENTO_INICIAL...");
+      Serial.println("-----------------------------------------------------");
       estado_actual = ESTADO_ESPERANDO_AUTO;
       break;
 
@@ -243,7 +301,7 @@ void fsm()
 				  Serial.println("-----------------------------------------------------");
 
           abrirBarrera();
-          timerBarrera();
+          obtenerTimerBarrera();
           estado_actual = ESTADO_ATIENDE_AUTO;
           break;
 
@@ -309,7 +367,7 @@ void fsm()
           Serial.println("Estado ESTADO_INGRESO_AUTO...");
           Serial.println("Evento EVENTO_NO_HAY_LUGAR...");
           Serial.println("-----------------------------------------------------");
-          estado_actual = ESTADO_AUTO_SALIENDO;
+          estado_actual = ESTADO_ESTACIONAMIENTO_OCUPADO;
           break;
 
         case EVENTO_NO_DETECTA_LUZ_EXTERIOR:
@@ -357,12 +415,13 @@ void fsm()
           estado_actual = ESTADO_ESPERANDO_AUTO; 
           break;
 
-        case EVENTO_DETECTA_AUTO:
+        case EVENTO_HAY_LUGAR:
           Serial.println("-----------------------------------------------------");
           Serial.println("Estado ESTADO_AUTO_SALIENDO...");
           Serial.println("Evento EVENTO_DETECTA_AUTO...");
           Serial.println("-----------------------------------------------------");
-          estado_actual = ESTADO_INGRESO_AUTO; 
+          actualizar_leds();
+          estado_actual = ESTADO_ESPERANDO_AUTO;
           break;
 
         case EVENTO_NO_DETECTA_LUZ_EXTERIOR:
