@@ -11,6 +11,7 @@
 #define	LED_HAY_AUTO_ESTACION1 7
 #define LED_HAY_AUTO_ESTACION2 5
 #define LED_LUZ_EXTERIOR 4
+#define PIN_FOTORRESISTENCIA A5
 
 #define TRIGGER_SENSOR_ESTACION1 12
 #define TRIGGER_SENSOR_ESTACION2 10
@@ -66,6 +67,7 @@ bool slot2_libre = true;
 unsigned long tiempo_actual;  
 unsigned long tiempo_anterior;
 bool timerBarrera = false;
+bool detectoLuzExterior = true;
 
 
 int distanciaAuto(int triggerPin, int echoPin)
@@ -172,8 +174,7 @@ bool obtenerEntraAuto()
 bool detectaLuzExterior()
 {
   int entradaLuz;
-  entradaLuz=analogRead(A5);
-
+  entradaLuz=analogRead(PIN_FOTORRESISTENCIA);
   if(entradaLuz > CANTIDAD_LUZ_MINIMA)
   {
     return true;
@@ -182,6 +183,7 @@ bool detectaLuzExterior()
   {
     return false;
   }
+  return detectoLuzExterior;
 }
 void encenderLuzNoche()
 {
@@ -196,7 +198,7 @@ void apagarLuzNoche()
 void setup()
 {
   Serial.begin(9600);
-  pinMode(A5, INPUT);
+  pinMode(PIN_FOTORRESISTENCIA, INPUT);
   pinMode(LED_LUZ_EXTERIOR, OUTPUT);
   pinMode(LED_HAY_AUTO_ESTACION1, OUTPUT);
   pinMode(LED_HAY_AUTO_ESTACION2, OUTPUT);
@@ -208,6 +210,8 @@ void setup()
   //delay(5000);
   Serial.println("listo");
   estado_actual = ESTADO_INICIAL;
+  detectoLuzExterior = !detectaLuzExterior();
+  Serial.println(detectoLuzExterior);
 }
 
 bool obtenerTimerBarrera()
@@ -224,14 +228,7 @@ void tomar_evento()
   bool entraAuto;
 
  
-  if(detectaLuzExterior)
-  {
-    evento_actual = EVENTO_DETECTA_LUZ_EXTERIOR;
-  }
-  else
-  {
-    evento_actual = EVENTO_NO_DETECTA_LUZ_EXTERIOR;
-  }
+
   //Validamos si un auto está saliendo 
   saleAuto = obtenerSaleAuto();
   if(saleAuto)
@@ -258,9 +255,7 @@ void tomar_evento()
     // Toma el tiempo actual.
     tiempo_actual = millis();
     bool prescenciaBarrera = detectarPresencia(TRIGGER_SENSOR_BARRERA, ECHO_SENSOR_BARRERA);
-          Serial.print("detectarPresencia: ");
-      Serial.println(prescenciaBarrera);
-      delay(1000);
+
     if(prescenciaBarrera)
     {
       evento_actual = EVENTO_DETECTA_AUTO;
@@ -272,6 +267,19 @@ void tomar_evento()
       timerBarrera = false;
     }
   }
+  if(detectoLuzExterior != detectaLuzExterior()) {
+    detectoLuzExterior = detectaLuzExterior();
+    if(detectoLuzExterior)
+    {
+      evento_actual = EVENTO_DETECTA_LUZ_EXTERIOR;
+    }
+    else
+    {
+      evento_actual = EVENTO_NO_DETECTA_LUZ_EXTERIOR;
+    }
+  }
+  
+
   //Analizamos pulsador
   boton=digitalRead(BOTON_PULSAR);  //se asigna a la variable “boton” el valor del pin 12
   if(boton)
@@ -315,28 +323,44 @@ void fsm()
 {
 
   tomar_evento();
-  Serial.print("Estado: ");
-  Serial.println(estado_actual);
-  //delay(1000);
-  Serial.print("Evento: ");
-  Serial.println(evento_actual);
-  ///delay(1000);
-   Serial.print("slot1_libre: ");
-  Serial.println(slot1_libre);
+  // Serial.print("Estado: ");
+  // Serial.println(estado_actual);
+  // //delay(1000);
+  // Serial.print("Evento: ");
+  // Serial.println(evento_actual);
+  // ///delay(1000);
+  //  Serial.print("slot1_libre: ");
+  // Serial.println(slot1_libre);
   
 
-  Serial.print("slot2_libre: ");
-  Serial.println(slot2_libre);
-  delay(1000);
+  // Serial.print("slot2_libre: ");
+  // Serial.println(slot2_libre);
+  // delay(1000);
 
   switch(estado_actual)
   {
     case ESTADO_INICIAL:
-      Serial.println("-----------------------------------------------------");
-      Serial.println("Estado ESTADO_INICIAL...");
-      Serial.println("Evento EVENTO_INICIAL...");
-      Serial.println("-----------------------------------------------------");
-      estado_actual = ESTADO_ESPERANDO_AUTO;
+    actualizar_leds();
+    switch(evento_actual)
+    { 
+      case EVENTO_NO_DETECTA_LUZ_EXTERIOR:
+        Serial.println("-----------------------------------------------------");
+        Serial.println("Estado ESTADO_INICIAL...");
+        Serial.println("Evento EVENTO_NO_DETECTA_LUZ_EXTERIOR...");
+        Serial.println("-----------------------------------------------------"); 
+        encenderLuzNoche();
+        estado_actual = ESTADO_ESPERANDO_AUTO;
+        break;
+
+      case EVENTO_DETECTA_LUZ_EXTERIOR:
+        Serial.println("-----------------------------------------------------");
+        Serial.println("Estado ESTADO_INICIAL...");
+        Serial.println("Evento EVENTO_DETECTA_LUZ_EXTERIOR...");
+        Serial.println("-----------------------------------------------------"); 
+        apagarLuzNoche();
+        estado_actual = ESTADO_ESPERANDO_AUTO;
+        break;
+    }
       break;
 
     case ESTADO_ESPERANDO_AUTO:
@@ -362,13 +386,21 @@ void fsm()
           actualizar_leds();
           estado_actual = ESTADO_AUTO_SALIENDO;
           break;
+        case EVENTO_NO_DETECTA_LUZ_EXTERIOR:
+          Serial.println("-----------------------------------------------------");
+          Serial.println("Estado ESTADO_AUTO_SALIENDO...");
+          Serial.println("Evento EVENTO_NO_DETECTA_LUZ_EXTERIOR...");
+          Serial.println("-----------------------------------------------------"); 
+          encenderLuzNoche();
+          estado_actual = ESTADO_ESPERANDO_AUTO;
+          break;
 
-        case EVENTO_DETECTA_AUTO_ESTACIONADO:
+        case EVENTO_DETECTA_LUZ_EXTERIOR:
           Serial.println("-----------------------------------------------------");
-          Serial.println("Estado ESTADO_ESPERANDO_AUTO...");
-          Serial.println("Evento EVENTO_DETECTA_AUTO_ESTACIONADO...");
-          Serial.println("-----------------------------------------------------");
-          actualizar_leds();
+          Serial.println("Estado ESTADO_AUTO_SALIENDO...");
+          Serial.println("Evento EVENTO_DETECTA_LUZ_EXTERIOR...");
+          Serial.println("-----------------------------------------------------"); 
+          apagarLuzNoche();
           estado_actual = ESTADO_ESPERANDO_AUTO;
           break;
 
@@ -429,24 +461,6 @@ void fsm()
           estado_actual = ESTADO_ESTACIONAMIENTO_OCUPADO;
           break;
 
-        case EVENTO_NO_DETECTA_LUZ_EXTERIOR:
-          Serial.println("-----------------------------------------------------");
-          Serial.println("Estado ESTADO_INGRESO_AUTO...");
-          Serial.println("Evento EVENTO_NO_DETECTA_LUZ_EXTERIOR...");
-          Serial.println("-----------------------------------------------------"); 
-          encenderLuzNoche();
-          estado_actual = ESTADO_INGRESO_AUTO;
-          break;
-
-        case EVENTO_DETECTA_LUZ_EXTERIOR:
-          Serial.println("-----------------------------------------------------");
-          Serial.println("Estado ESTADO_INGRESO_AUTO...");
-          Serial.println("Evento EVENTO_DETECTA_LUZ_EXTERIOR...");
-          Serial.println("-----------------------------------------------------"); 
-          apagarLuzNoche();
-          estado_actual = ESTADO_INGRESO_AUTO;
-          break;
-
         default:
           break;
       }
@@ -463,6 +477,23 @@ void fsm()
           Serial.println("-----------------------------------------------------"); 
           actualizar_leds();
           estado_actual = ESTADO_AUTO_SALIENDO;
+          break;
+        case EVENTO_NO_DETECTA_LUZ_EXTERIOR:
+          Serial.println("-----------------------------------------------------");
+          Serial.println("Estado ESTADO_AUTO_SALIENDO...");
+          Serial.println("Evento EVENTO_NO_DETECTA_LUZ_EXTERIOR...");
+          Serial.println("-----------------------------------------------------"); 
+          encenderLuzNoche();
+          estado_actual = ESTADO_ESTACIONAMIENTO_OCUPADO;
+          break;
+
+        case EVENTO_DETECTA_LUZ_EXTERIOR:
+          Serial.println("-----------------------------------------------------");
+          Serial.println("Estado ESTADO_AUTO_SALIENDO...");
+          Serial.println("Evento EVENTO_DETECTA_LUZ_EXTERIOR...");
+          Serial.println("-----------------------------------------------------"); 
+          apagarLuzNoche();
+          estado_actual = ESTADO_ESTACIONAMIENTO_OCUPADO;
           break;
 
         default:
@@ -491,24 +522,6 @@ void fsm()
           Serial.println("-----------------------------------------------------");
           actualizar_leds();
           estado_actual = ESTADO_ESPERANDO_AUTO;
-          break;
-
-        case EVENTO_NO_DETECTA_LUZ_EXTERIOR:
-          Serial.println("-----------------------------------------------------");
-          Serial.println("Estado ESTADO_AUTO_SALIENDO...");
-          Serial.println("Evento EVENTO_NO_DETECTA_LUZ_EXTERIOR...");
-          Serial.println("-----------------------------------------------------"); 
-          encenderLuzNoche();
-          estado_actual = ESTADO_AUTO_SALIENDO;
-          break;
-
-        case EVENTO_DETECTA_LUZ_EXTERIOR:
-          Serial.println("-----------------------------------------------------");
-          Serial.println("Estado ESTADO_AUTO_SALIENDO...");
-          Serial.println("Evento EVENTO_DETECTA_LUZ_EXTERIOR...");
-          Serial.println("-----------------------------------------------------"); 
-          apagarLuzNoche();
-          estado_actual = ESTADO_AUTO_SALIENDO;
           break;
 
         default:
