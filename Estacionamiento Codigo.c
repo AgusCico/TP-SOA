@@ -218,6 +218,7 @@ bool obtenerTimerBarrera()
 {
   // Toma el tiempo en el que se abrió la barrera.
   tiempo_anterior = millis();
+
   timerBarrera = true;
   return timerBarrera;
 }
@@ -261,7 +262,7 @@ void tomar_evento()
       evento_actual = EVENTO_DETECTA_AUTO;
       timerBarrera = false;
     }
-    else if((tiempo_actual-tiempo_anterior) > TIEMPO_MAX_MILIS )
+    else if((tiempo_actual-tiempo_anterior) > TIMEOUT_BARRERA_MILIS )
     {
       evento_actual = EVENTO_TIMEOUT_BARRERA;
       timerBarrera = false;
