@@ -148,6 +148,7 @@ void fsm()
   switch(estado_actual)
   {
     case ESTADO_INICIAL:
+<<<<<<< Updated upstream
       switch(evento_actual)
       {
         case :
@@ -157,6 +158,14 @@ void fsm()
         default:
           break;
       }
+=======
+      Serial.println("-----------------------------------------------------");
+      Serial.println("Estado ESTADO_INICIAL...");
+      Serial.println("Evento EVENTO_INICIAL...");
+      Serial.println("-----------------------------------------------------");
+      actualizar_leds();
+      estado_actual = ESTADO_ESPERANDO_AUTO;
+>>>>>>> Stashed changes
       break;
 
     case ESTADO_ESPERANDO_AUTO:
