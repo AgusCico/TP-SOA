@@ -1,8 +1,11 @@
 #include <Servo.h>
 
+#include <pins_arduino.h>
+
+#include <SoftwareSerial.h>
 
 #define TIMEOUT_BARRERA_MILIS 5000
-#define TIEMPO_MAXIMO_ECHO 19000 //Tiempo maximo que puede durar el ECHO
+#define TIEMPO_MAXIMO_ECHO 1000 //Tiempo maximo que puede durar el ECHO
 
 // #define NINGUN_AUTO 0
 // #define AUTO_SLOT1 1
@@ -12,9 +15,14 @@
 #define BARRERA_BAJA 90
 #define BARRERA_ALTA 0
 
-#define	LED_HAY_AUTO_ESTACION1 7
-#define LED_HAY_AUTO_ESTACION2 5
-#define LED_LUZ_EXTERIOR 4
+// #define	LED_HAY_AUTO_ESTACION1 7
+// #define LED_HAY_AUTO_ESTACION2 5
+// #define LED_LUZ_EXTERIOR 4
+
+#define	LED_HAY_AUTO_ESTACION1 16
+#define LED_HAY_AUTO_ESTACION2 15
+#define LED_LUZ_EXTERIOR 14
+
 #define PIN_FOTORRESISTENCIA A5
 
 #define TRIGGER_SENSOR_ESTACION1 12
@@ -64,6 +72,15 @@
 
 // #define constantes de trabajo
 #define CANTIDAD_SLOT_DISPONIBLE 2
+
+#define BT_APAGAR_LUZ 0
+#define BT_PRENDER_LUZ 1
+#define BT_VOLVER_A_DETECTAR_LUZ 2
+#define BT_ABRIR_BARRERA 3
+
+#define BT_PIN_RX 4
+#define BT_PIN_TX 5
+SoftwareSerial BTserial(4, 5);  //RX TX
 
 //int pos = 0;
 Servo servo_9;
@@ -126,6 +143,15 @@ bool detectarPresencia(int trigger, int echo)
 
 
 // -----------------------
+
+// int leoBluetooth()
+// {
+//     accionBT = BTserial.read();
+//     //Serial.write(BTserial.read());//muestro por el serial
+//     Serial.println(accionBT);//muestro por output
+
+// }
+
 
 // Función para verificar si un auto ocupa el slot
 bool obtenerEntraAuto()
@@ -238,56 +264,9 @@ void apagarLuzNoche()
 // Función que se encarga de actualizar los leds de indicadores de estacionamiento
 void actualizar_leds_estacionamiento()
 {
-//   if(slot1_libre)
-//   {
-//     if(slot1_led == LOW)
-//     {
-//       digitalWrite(LED_HAY_AUTO_ESTACION1, HIGH);  
-//     }
-//   }
-//   else
-//   {
-//      digitalWrite(LED_HAY_AUTO_ESTACION1, LOW);  
-//   }
-
-//   if(slot2_libre)
-//     {
-//       if(slot2_led == LOW)
-//       {
-//         digitalWrite(LED_HAY_AUTO_ESTACION2, HIGH);  
-//       }
-//     }
-//     else
-//     {
-//       digitalWrite(LED_HAY_AUTO_ESTACION2, LOW);  
-//     }
   digitalWrite(LED_HAY_AUTO_ESTACION1, slot1_led);
   digitalWrite(LED_HAY_AUTO_ESTACION2, slot2_led);
 }
-
-// //Función que apaga el led del estacionamiento 1
-// void apagar_led_slot1()
-// {
-//   digitalWrite(LED_HAY_AUTO_ESTACION1, LOW);     
-// }
-
-// //Función que apaga el led del estacionamiento 2
-// void apagar_led_slot2()
-// {
-//   digitalWrite(LED_HAY_AUTO_ESTACION2, LOW);     
-// }
-
-// //Función que prender el led del estacionamiento 1
-// void prender_led_slot1()
-// {
-//   digitalWrite(LED_HAY_AUTO_ESTACION1, HIGH);     
-// }
-
-// //Función que prender el led del estacionamiento 2
-// void prender_led_slot2()
-// {
-//   digitalWrite(LED_HAY_AUTO_ESTACION2, HIGH);     
-// }
 
 // Función que se encarga de evaluar los sensores del embedido y generar eventos del sistema
 void tomar_evento()
@@ -295,40 +274,33 @@ void tomar_evento()
   bool saleAuto;
   bool entraAuto;
 
+  int accionBT = -1;
+  // 0 Se apaga permanentemente
+  // 1 Se prende permanentemente
+  // 2 Vuelve a funcionar con la fotoresistencia
+  // 3 abre la barrera
+
+
+  if (BTserial.available()) 
+  {
+    accionBT = BTserial.read();
+
+    if (accionBT == BT_APAGAR_LUZ)
+    {
+       //TODO: 
+    }
+    else if (accionBT == BT_PRENDER_LUZ)
+    {
+      //TODO:
+    }
+    else if (accionBT == BT_VOLVER_A_DETECTAR_LUZ)
+    {
+      //TODO:
+    }
+    
+  }
   // SENSOR DISTACIA ESTACIONAMIENTO: Validamos si un auto está saliendo 
-  // saleAuto = obtenerSaleAuto();
-//   switch(saleAuto)
-//   {
-//     case AUTO_SLOT1:
-//       evento_actual = EVENTO_SLOT1_LIBRE;
-//       break;
-//     case AUTO_SLOT2:
-//       evento_actual = EVENTO_SLOT2_LIBRE;
-//       break;
-//     case AMBOS_SLOTS:
-//       evento_actual = EVENTO_AMBOS_SLOTS_LIBRES;
-//       break;
-//     default:
-//       break;
-//   }
-
-  // entraAuto = obtenerEntraAuto();
-//   switch(entraAuto)
-//   {
-//     case AUTO_SLOT1:
-//       evento_actual = EVENTO_SLOT1_OCUPADO;
-//       break;
-//     case AUTO_SLOT2:
-//       evento_actual = EVENTO_SLOT2_OCUPADO;
-//       break;
-//     case AMBOS_SLOTS:
-//       evento_actual = EVENTO_NO_HAY_LUGAR;
-//       break;
-//     default:
-//       break;
-//   }  
-
-
+ 
   saleAuto = obtenerSaleAuto();
   if(saleAuto)
   {
@@ -348,9 +320,7 @@ void tomar_evento()
     evento_actual = EVENTO_NO_HAY_LUGAR;
   }
 
-  // slot1_led = digitalRead(LED_HAY_AUTO_ESTACION1);
-  // slot2_led = digitalRead(LED_HAY_AUTO_ESTACION2);
-
+ 
   // SENSOR FOTORESISTNCIA: Analizamos luz exterior
   if(detectoLuzExterior != detectaLuzExterior()) {
     detectoLuzExterior = detectaLuzExterior();
@@ -388,7 +358,7 @@ void tomar_evento()
 
   // SENSOR PULSADOR: Analizamos pulsador
   boton=digitalRead(BOTON_PULSAR);  //se asigna a la variable “boton” el valor del pin 12
-  if(boton)
+  if(boton || accionBT = BT_ABRIR_BARRERA)
   {
     evento_actual = EVENTO_DETECTA_PULSADOR;
     Serial.println("Se presiona pulsador, Evento EVENTO_DETECTA_PULSADOR");
@@ -606,6 +576,7 @@ void fsm()
 void setup()
 {
   Serial.begin(9600);
+  BTserial.begin(9600);
   pinMode(PIN_FOTORRESISTENCIA, INPUT);
   pinMode(LED_LUZ_EXTERIOR, OUTPUT);
   pinMode(LED_HAY_AUTO_ESTACION1, OUTPUT);
@@ -622,7 +593,7 @@ void setup()
   digitalWrite(LED_HAY_AUTO_ESTACION2, HIGH);
 
   detectoLuzExterior = detectaLuzExterior();
-
+  
   // Seteamos estado inicial
   estado_actual = ESTADO_INICIAL;
 }
