@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SmartParking</string>
+    <string name="openBarrier">Abierta</string>
 </resources>

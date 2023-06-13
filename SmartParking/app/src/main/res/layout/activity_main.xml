@@ -1,56 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="@drawable/fondo_app">
-
-    <EditText
-        android:id="@+id/request"
-        android:layout_width="320dp"
-        android:layout_height="50dp"
-        android:ems="10"
-        android:inputType="text"
-        android:text="Ingrese Comando"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="90dp"
-        tools:layout_editor_absoluteY="450dp"
-        tools:textColor="@color/white"
-        tools:textSize="10pt" />
+    android:background="@drawable/fondo_app"
+    tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/buttonSend"
-        android:layout_width="176dp"
-        android:layout_height="58dp"
-        android:text="Enviar"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="162dp"
-        tools:layout_editor_absoluteY="519dp"/>
-
-    <TextView
-        android:id="@+id/response"
-        android:layout_width="281dp"
-        android:layout_height="27dp"
-        android:text="Resultado"
-        android:textAlignment="center"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="110dp"
-        tools:layout_editor_absoluteY="655dp"
-        tools:textColor="@color/white"
-        tools:textSize="10pt" />
+        android:id="@+id/buttonSensor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="268dp"
+        android:layout_marginRight="2dp"
+        android:text="Presione para \nIngreso al \nestacionamiento"
+        android:textSize="12sp"
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="350dp"
+        android:fontFamily="sans-serif-condensed-light"
+        android:gravity="center"
         android:text="Smart Parking"
-        tools:fontFamily="sans-serif-condensed-light"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="150dp"
-        tools:layout_editor_absoluteY="353dp"
-        tools:textColor="@color/white"
-        tools:textSize="15pt"
-        tools:textStyle="bold" />
+        android:textColor="@color/white"
+        android:textSize="45sp"
+        android:textStyle="bold"
+        tools:ignore="MissingConstraints" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <EditText
+        android:id="@+id/request"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:inputType="text"
+        android:textSize="30dp"
+        android:hint="Mensaje para el Arduino"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="10dp"
+        android:padding="20dp"
+        tools:ignore="MissingConstraints"
+        android:textColorHint="@color/white"
+        android:textColor="@color/white"
+        android:background="#38ffffff" />
+
+    <Button
+        android:id="@+id/buttonSend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/request"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="20dp"
+        android:padding="30dp"
+        android:text="Enviar"
+        android:textSize="20sp"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/response"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonSend"
+        android:text="Resultado"
+        android:layout_marginTop="30dp"
+        android:layout_marginHorizontal="20dp"
+        android:textAlignment="center"
+        tools:ignore="MissingConstraints"
+        android:textColor="@color/white"
+        tools:textSize="15pt" />
+
+</RelativeLayout>
