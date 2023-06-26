@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -35,6 +36,19 @@ public class MainActivity extends AppCompatActivity {
     private Button buttonSearchDevices;
     private ArrayList<BluetoothDevice> mDeviceList = new ArrayList<BluetoothDevice>();
     private BluetoothAdapter mBluetoothAdapter;
+    private ProgressDialog mProgressDlg;
+    public static final int MULTIPLE_PERMISSIONS = 10;
+
+    String[] permissions= new String[]{
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.BLUETOOTH_ADVERTISE,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.READ_EXTERNAL_STORAGE};
 
     @Override
     @SuppressLint("MissingPermission")
@@ -60,17 +74,28 @@ public class MainActivity extends AppCompatActivity {
         buttonSearchDevices.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+                mBluetoothAdapter.startDiscovery();
+                Log.i("BLUETOOTH", "isDiscovery: " + mBluetoothAdapter.isDiscovering());
+                Log.i("BLUETOOTH", "DISPARA BUSQUEDA");
 
-                ArrayList<BluetoothDevice> list = new ArrayList<BluetoothDevice>();
-                list.addAll(pairedDevices);
-                Intent intent = new Intent(MainActivity.this, DeviceListActivity.class);
-                intent.putParcelableArrayListExtra("device.list", list);
-                startActivity(intent);
+//                Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+//                ArrayList<BluetoothDevice> list = new ArrayList<BluetoothDevice>();
+//                list.addAll(pairedDevices);
+//                Intent intent = new Intent(MainActivity.this, DeviceListActivity.class);
+//                intent.putParcelableArrayListExtra("device.list", list);
+//                startActivity(intent);
             }
         });
 
+        checkPermissions();
         enableComponent();
+
+        //Se Crea la ventana de dialogo que indica que se esta buscando dispositivos bluethoot
+        mProgressDlg = new ProgressDialog(this);
+        mProgressDlg.setTitle("Bluetooth");
+        mProgressDlg.setMessage("Buscando dispositivos...");
+        mProgressDlg.setCancelable(false);
     }
 
     public void openActivity2() {
@@ -127,25 +152,35 @@ public class MainActivity extends AppCompatActivity {
                 final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
 
                 if (state == BluetoothAdapter.STATE_ON) {
-                    Log.i("BLUETOOTH_BROADCAST", "ACTIVADO");
+                    Log.i("BLUETOOTH", "ACTIVADO");
                     showEnabled();
                 } else {
-                    Log.i("BLUETOOTH_BROADCAST", "DESACTIVADO");
+                    Log.i("BLUETOOTH", "DESACTIVADO");
                     showDisabled();
                 }
             }
             //Si se inicio la busqueda de dispositivos Bluetooth
             else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                //Creo la lista donde voy a mostrar los dispositivos encontrados
+                Log.i("BLUETOOTH", "INICIA BUSQUEDA");
                 mDeviceList = new ArrayList<BluetoothDevice>();
-                Log.i("BLUETOOTH_BROADCAST", "BUSQUEDA");
+                mProgressDlg.show();
+            }
+            //Si finalizo la busqueda de dispositivos Bluetooth
+            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
+            {
+                Log.i("BLUETOOTH", "FINALIZA BUSQUEDA");
+                mProgressDlg.dismiss();
+
+                Intent newIntent = new Intent(MainActivity.this, DeviceListActivity.class);
+                newIntent.putParcelableArrayListExtra("device.list", mDeviceList);
+                startActivity(newIntent);
             }
             //si se encontro un dispositivo bluethoot
             else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 //Se lo agregan sus datos a una lista de dispositivos encontrados
                 device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 mDeviceList.add(device);
-                Log.i("BLUETOOTH_BROADCAST", "Dispositivo Encontrado:" + device.getName());
+                Log.i("BLUETOOTH", "Dispositivo Encontrado:" + device.getName());
             }
         }
     };
@@ -172,5 +207,29 @@ public class MainActivity extends AppCompatActivity {
         txtStatusBluetooth.setTextColor(Color.RED);
         buttonActivate.setEnabled(false);
         buttonSearchDevices.setEnabled(false);
+    }
+
+    //Metodo que chequea si estan habilitados los permisos
+    private  boolean checkPermissions() {
+        int result;
+        List<String> listPermissionsNeeded = new ArrayList<>();
+
+        //Se chequea si la version de Android es menor a la 6
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+
+
+        for (String p:permissions) {
+            result = ContextCompat.checkSelfPermission(this,p);
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                listPermissionsNeeded.add(p);
+            }
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),MULTIPLE_PERMISSIONS );
+            return false;
+        }
+        return true;
     }
 }
