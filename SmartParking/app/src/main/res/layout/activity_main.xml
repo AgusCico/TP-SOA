@@ -7,17 +7,6 @@
     android:background="@drawable/fondo_app"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/buttonSensor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="268dp"
-        android:layout_marginRight="2dp"
-        android:text="Presione para \nIngreso al \nestacionamiento"
-        android:textSize="12sp"
-        tools:ignore="MissingConstraints" />
-
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
@@ -31,45 +20,41 @@
         android:textStyle="bold"
         tools:ignore="MissingConstraints" />
 
-    <EditText
-        android:id="@+id/request"
+    <TextView
+        android:id="@+id/statusBluetooth"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
-        android:inputType="text"
-        android:textSize="30dp"
-        android:hint="Mensaje para el Arduino"
-        android:layout_marginTop="20dp"
-        android:layout_marginHorizontal="10dp"
-        android:padding="20dp"
-        tools:ignore="MissingConstraints"
-        android:textColorHint="@color/white"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="25dp"
+        android:text="Status Bluetooth"
+        android:textAlignment="center"
         android:textColor="@color/white"
-        android:background="#38ffffff" />
+        tools:ignore="MissingConstraints"
+        tools:textSize="20pt" />
 
     <Button
-        android:id="@+id/buttonSend"
+        android:id="@+id/buttonActivate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/request"
-        android:layout_marginTop="20dp"
+        android:layout_below="@+id/statusBluetooth"
         android:layout_marginHorizontal="20dp"
-        android:padding="30dp"
-        android:text="Enviar"
+        android:layout_marginTop="15dp"
+        android:padding="20dp"
+        android:text="Activar Bluetooth"
         android:textSize="20sp"
         tools:ignore="MissingConstraints" />
 
-    <TextView
-        android:id="@+id/response"
+    <Button
+        android:id="@+id/buttonSearchDevices"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/buttonSend"
-        android:text="Resultado"
-        android:layout_marginTop="30dp"
+        android:layout_below="@+id/buttonActivate"
         android:layout_marginHorizontal="20dp"
-        android:textAlignment="center"
-        tools:ignore="MissingConstraints"
-        android:textColor="@color/white"
-        tools:textSize="15pt" />
+        android:layout_marginTop="15dp"
+        android:padding="20dp"
+        android:text="Buscar Dispositivos"
+        android:textSize="20sp"
+        tools:ignore="MissingConstraints" />
 
 </RelativeLayout>
