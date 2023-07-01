@@ -78,16 +78,35 @@ public class DispositivoConectado extends Activity implements SensorEventListene
                 if (msg.what == handlerState) {
                     char MyCaracter = (char) msg.obj;
 
-                    switch (MyCaracter) {
-                        case '1':
-                            txtSpot1.setText("LIBRE");
-                        case '2':
-                            txtSpot1.setText("OCUPADO");
-                        case '3':
-                            txtSpot2.setText("LIBRE");
-                        case '4':
-                            txtSpot2.setText("OCUPADO");
+                    String str = String.valueOf(MyCaracter);
 
+                    Log.i("VALOR RECIBIDO", str);
+
+                    switch (MyCaracter) {
+                        case 'a':
+                            Log.i("ENTRA", "1");
+                            txtSpot1.setText("LIBRE");
+                            break;
+                        case 'c':
+                            Log.i("ENTRA", "2");
+                            txtSpot1.setText("OCUPADO");
+                            break;
+                        case 'd':
+                            Log.i("ENTRA", "3");
+                            txtSpot2.setText("LIBRE");
+                            break;
+                        case 'e':
+                            Log.i("ENTRA", "4");
+                            txtSpot2.setText("OCUPADO");
+                            break;
+                        case 'm':
+                            textBarrera.setText("CERRADA");
+                            break;
+                        case 'n':
+                            textBarrera.setText("ABIERTA");
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
@@ -99,9 +118,7 @@ public class DispositivoConectado extends Activity implements SensorEventListene
         openBarrier.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DispositivoConectado.this, DispositivoConectadoComando.class);
-                intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
-                startActivity(intent);
+                MyConexionBT.write("b");
             }
         });
 
@@ -197,8 +214,6 @@ public class DispositivoConectado extends Activity implements SensorEventListene
             if ((Math.abs(values[0]) > ACC || Math.abs(values[1]) > ACC || Math.abs(values[2]) > ACC))
             {
                 Log.i("sensor", "running");
-                textBarrera.setText(getText(R.string.openBarrier));
-                textBarrera.setBackgroundResource(R.color.green);
                 MyConexionBT.write("b");
             }
         }

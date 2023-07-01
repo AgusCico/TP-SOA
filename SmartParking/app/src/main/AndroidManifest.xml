@@ -28,25 +28,15 @@
             android:name=".DispositivosVinculados"
             android:exported="false" />
         <activity
-            android:name=".SensorsActivity"
+            android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".SmartParkingActivity"
-            android:exported="true" />
-        <activity
-            android:name=".MainActivity"
+            android:name=".Login"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".DeviceListActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
     </application>
