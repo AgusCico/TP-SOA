@@ -1,8 +1,10 @@
 package com.m5.smartparking;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -19,20 +21,18 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.core.app.ActivityCompat;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class SmartParkingActivity extends Activity {
+public class DispositivoConectadoComando extends AppCompatActivity {
 
     private ArrayList<BluetoothDevice> mDeviceList = new ArrayList<BluetoothDevice>();
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
-    private SmartParkingActivity.ConnectedThread MyConexionBT;
+    private DispositivoConectadoComando.ConnectedThread MyConexionBT;
     Handler bluetoothIn;
     final int handlerState = 0;
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -42,11 +42,10 @@ public class SmartParkingActivity extends Activity {
     @SuppressLint("MissingPermission")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_smart_parking);
+        setContentView(R.layout.activity_dispositivo_conectado_comando);
 
-        Button buttonSend = (Button) findViewById(R.id.buttonSend);
-        Button buttonSensor = (Button) findViewById(R.id.buttonSensor);
-        TextView textResponse = (TextView) findViewById(R.id.response);
+        Button buttonSend = (Button) findViewById(R.id.buttonSendCommand);
+        TextView textResponse = (TextView) findViewById(R.id.txtResponseCommand);
 
         //-----------------------------------------
         bluetoothIn = new Handler() {
@@ -58,7 +57,7 @@ public class SmartParkingActivity extends Activity {
                         case '5':
                             openSensorActivity();
                         case '6':
-                            textResponse.setText("Comando incorrecto");
+                            textResponse.setText("Comando Incorrecto. Intentelo nuevamente");
                     }
                 }
             }
@@ -66,12 +65,6 @@ public class SmartParkingActivity extends Activity {
 
         btAdapter = BluetoothAdapter.getDefaultAdapter(); // get Bluetooth adapter
 
-        buttonSensor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openSensorActivity();
-            }
-        });
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -130,7 +123,7 @@ public class SmartParkingActivity extends Activity {
             }
         }
 
-        MyConexionBT = new SmartParkingActivity.ConnectedThread(btSocket);
+        MyConexionBT = new DispositivoConectadoComando.ConnectedThread(btSocket);
         MyConexionBT.start();
     }
 
@@ -151,7 +144,7 @@ public class SmartParkingActivity extends Activity {
 
     // ACÁ COMUNICARNOS CON EL ARDUINO !!!
     public void sendMessage(View view){
-        TextView textRequest = (TextView) findViewById(R.id.request);
+        TextView textRequest = (TextView) findViewById(R.id.txtCommand);
         MyConexionBT.write(textRequest.getText().toString());
     }
 
@@ -171,14 +164,14 @@ public class SmartParkingActivity extends Activity {
                 if (state != BluetoothAdapter.STATE_ON) {
                     Log.i("BLUETOOTH_BROADCAST", "BLUETOOTH DESACTIVADO");
                     showToast("Se desactivo el bluetooth");
-                    Intent i = new Intent(SmartParkingActivity.this, MainActivity.class);
+                    Intent i = new Intent(DispositivoConectadoComando.this, MainActivity.class);
                     startActivity(i);
                 }
             }
             else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
                 Log.i("BLUETOOTH_BROADCAST", "Dispositivo remoto desconectado");
                 showToast("Se desconectó dispositivo");
-                Intent i = new Intent(SmartParkingActivity.this, MainActivity.class);
+                Intent i = new Intent(DispositivoConectadoComando.this, MainActivity.class);
                 startActivity(i);
             }
         }

@@ -4,118 +4,119 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#40CFFF"
+    android:background="#FFFFFF"
     tools:context=".SensorsActivity">
 
     <TextView
         android:id="@+id/titulo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_marginTop="15dp"
-        android:textSize="20sp"
+        android:gravity="center"
+        android:text="Lugares de estacionamiento disponibles:"
         android:textColor="@color/black"
-        android:textStyle="bold"
-        android:text="Lugares de estacionamiento disponibles:" />
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/Lugar1"
-        android:layout_below="@id/titulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="80dp"
+        android:layout_below="@id/titulo"
         android:layout_marginStart="15dp"
         android:layout_marginTop="50dp"
+        android:layout_marginEnd="80dp"
         android:text="Lugar numero 1" />
 
     <TextView
         android:id="@+id/Lugar2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="80dp"
-        android:layout_marginStart="15dp"
         android:layout_below="@id/Lugar1"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="80dp"
         android:text="Lugar numero 2" />
 
     <TextView
         android:id="@+id/lugarOcupado1"
-        android:layout_below="@id/titulo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#9b9b9b"
+        android:layout_below="@id/titulo"
         android:layout_marginStart="30dp"
-        android:layout_marginEnd="100dp"
         android:layout_marginTop="50dp"
+        android:layout_marginEnd="100dp"
         android:layout_toEndOf="@id/Lugar1"
+        android:background="#9b9b9b"
         android:text="Libre"
         android:textColor="@color/black" />
 
     <TextView
         android:id="@+id/lugarOcupado2"
-        android:background="#9b9b9b"
         android:layout_width="match_parent"
-        android:textColor="@color/black"
-        android:layout_marginTop="20dp"
-        android:layout_toEndOf="@id/Lugar2"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="100dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/Lugar1"
-        android:text="Libre" />
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="100dp"
+        android:layout_toEndOf="@id/Lugar2"
+        android:background="#9b9b9b"
+        android:text="Libre"
+        android:textColor="@color/black" />
 
     <TextView
         android:id="@+id/titulo2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="15dp"
-        android:textSize="20sp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
         android:layout_below="@id/Lugar2"
-        android:text="Apertura de barrera:" />
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:text="Apertura de barrera:"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/barrera"
-        android:layout_below="@id/titulo2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="80dp"
+        android:layout_below="@id/titulo2"
         android:layout_marginStart="15dp"
         android:layout_marginTop="50dp"
+        android:layout_marginEnd="80dp"
         android:text="Estado barrera:" />
 
 
     <TextView
         android:id="@+id/barreraOcupada"
         android:layout_width="match_parent"
-        android:textColor="@color/black"
-        android:layout_marginTop="50dp"
-        android:layout_toEndOf="@id/barrera"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="100dp"
         android:layout_height="wrap_content"
-        android:background="#9b9b9b"
         android:layout_below="@id/titulo2"
-        android:text="Cerrada" />
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="100dp"
+        android:layout_toEndOf="@id/barrera"
+        android:background="#9b9b9b"
+        android:text="Cerrada"
+        android:textColor="@color/black" />
 
     <TextView
         android:id="@+id/shake"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginHorizontal="10dp"
-        android:textSize="14sp"
-        android:textColor="@color/black"
-        android:textStyle="italic"
         android:layout_below="@id/barrera"
-        android:text="Para abrir la barrera debera realizar un 'Shake' con el dispositivo movil, y el siguiente CheckBox debe encontrarse activo!" />
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="20dp"
+        android:text="Para abrir la barrera debera realizar un 'Shake' con el dispositivo movil, y el siguiente CheckBox debe encontrarse activo!"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="italic" />
 
     <TextView
         android:id="@+id/textoShake"
-        android:layout_below="@id/shake"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/shake"
         android:layout_marginStart="15dp"
         android:layout_marginTop="30dp"
         android:padding="20dp"
@@ -124,13 +125,22 @@
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="match_parent"
-        android:layout_marginTop="30dp"
-        android:layout_marginStart="15dp"
         android:layout_height="wrap_content"
-        android:padding="20dp"
         android:layout_below="@id/shake"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="30dp"
         android:layout_toEndOf="@id/textoShake"
-        />
+        android:padding="20dp" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="174dp"
+        android:layout_marginBottom="81dp"
+        android:text="Button" />
 
 
 </RelativeLayout>

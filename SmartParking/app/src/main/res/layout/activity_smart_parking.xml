@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/fondo_app"
@@ -11,11 +12,13 @@
         android:id="@+id/buttonSensor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_marginLeft="268dp"
+        android:layout_marginTop="20dp"
         android:layout_marginRight="2dp"
         android:text="Presione para \nIngreso al \nestacionamiento"
         android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
     <TextView
@@ -29,47 +32,56 @@
         android:textColor="@color/white"
         android:textSize="45sp"
         android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
     <EditText
         android:id="@+id/request"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title"
-        android:inputType="text"
-        android:textSize="30dp"
-        android:hint="Mensaje para el Arduino"
-        android:layout_marginTop="20dp"
         android:layout_marginHorizontal="10dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:background="#38ffffff"
+        android:hint="Ingrese comando"
+        android:inputType="text"
         android:padding="20dp"
-        tools:ignore="MissingConstraints"
-        android:textColorHint="@color/white"
         android:textColor="@color/white"
-        android:background="#38ffffff" />
+        android:textColorHint="@color/white"
+        android:textSize="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/buttonSend"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/request"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="39dp"
+        android:layout_marginBottom="20dp"
         android:padding="30dp"
         android:text="Enviar"
         android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/response"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/request"
         tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/response"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/buttonSend"
-        android:text="Resultado"
-        android:layout_marginTop="30dp"
         android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="4dp"
         android:textAlignment="center"
-        tools:ignore="MissingConstraints"
         android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonSend"
+        tools:ignore="MissingConstraints"
         tools:textSize="15pt" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

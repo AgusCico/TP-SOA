@@ -16,6 +16,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -29,15 +31,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-public class SensorsActivity extends Activity implements SensorEventListener, OnCheckedChangeListener {
+
+public class DispositivoConectado extends Activity implements SensorEventListener, CompoundButton.OnCheckedChangeListener {
 
 
     private final static float ACC = 13;
-    private CheckBox           switchButton;
-    private TextView            textBarrera;
-   // private TextView            textLugar1;
+    private CheckBox switchButton;
+    private Button openBarrier;
+    private TextView textBarrera;
+    private TextView txtSpot1;
+    private TextView txtSpot2;
 
-    private SensorManager      sensor;
+    private SensorManager sensor;
 
     //-------------------------------------------
     Handler bluetoothIn;
@@ -48,6 +53,7 @@ public class SensorsActivity extends Activity implements SensorEventListener, On
     private ConnectedThread MyConexionBT;
     // Identificador unico de servicio - SPP UUID
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    public static String EXTRA_DEVICE_ADDRESS = "device_address";
     // String para la direccion MAC
     private static String address = null;
     //-------------------------------------------
@@ -55,26 +61,49 @@ public class SensorsActivity extends Activity implements SensorEventListener, On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sensors);
+        setContentView(R.layout.activity_dispositivo_conectado);
 
         sensor = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-        textBarrera = findViewById(R.id.barreraOcupada);
-     //   textLugar1 = findViewById(R.id.lugarOcupado1);
-        switchButton = findViewById(R.id.checkBox);
+        textBarrera = findViewById(R.id.estadoBarrera);
+        txtSpot1 = findViewById(R.id.spot1);
+        txtSpot2 = findViewById(R.id.spot2);
+        switchButton = findViewById(R.id.checkBoxShake);
         switchButton.setOnCheckedChangeListener(this);
+        openBarrier = (Button) findViewById(R.id.abrirBarrera);
 
         //-----------------------------------------
         bluetoothIn = new Handler() {
             public void handleMessage(android.os.Message msg) {
                 if (msg.what == handlerState) {
-                    Log.i("HACER ALGO", "HACER ALGO");
+                    char MyCaracter = (char) msg.obj;
+
+                    switch (MyCaracter) {
+                        case '1':
+                            txtSpot1.setText("LIBRE");
+                        case '2':
+                            txtSpot1.setText("OCUPADO");
+                        case '3':
+                            txtSpot2.setText("LIBRE");
+                        case '4':
+                            txtSpot2.setText("OCUPADO");
+
+                    }
                 }
             }
         };
 
         btAdapter = BluetoothAdapter.getDefaultAdapter(); // get Bluetooth adapter
         VerificarEstadoBT();
+
+        openBarrier.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DispositivoConectado.this, DispositivoConectadoComando.class);
+                intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -131,8 +160,8 @@ public class SensorsActivity extends Activity implements SensorEventListener, On
     @Override
     protected void onStop()
     {
-        unregisterSenser();
         super.onStop();
+        unregisterSenser();
     }
 
     @Override
@@ -170,9 +199,7 @@ public class SensorsActivity extends Activity implements SensorEventListener, On
                 Log.i("sensor", "running");
                 textBarrera.setText(getText(R.string.openBarrier));
                 textBarrera.setBackgroundResource(R.color.green);
-                // while ()
-                // textBarrera.setText("Cerrada");
-                // textBarrera.setBackgroundResource(R.color.red)
+                MyConexionBT.write("b");
             }
         }
     }
@@ -260,8 +287,6 @@ public class SensorsActivity extends Activity implements SensorEventListener, On
             } catch (IOException e) { }
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
-            Log.i("InputStream", mmInStream.toString());
-            Log.i("OutputStream", mmOutStream.toString());
         }
 
         public void run()
@@ -274,7 +299,6 @@ public class SensorsActivity extends Activity implements SensorEventListener, On
                     char ch = (char) byte_in[0];
                     bluetoothIn.obtainMessage(handlerState, ch).sendToTarget();
                 } catch (IOException e) {
-                    Log.i("Exception: ", e.toString());
                     break;
                 }
             }
