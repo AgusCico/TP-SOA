@@ -9,7 +9,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Login extends AppCompatActivity {
+public class Login extends AppCompatActivity 
+{
 
     private TextView user;
     private TextView password;
@@ -19,7 +20,8 @@ public class Login extends AppCompatActivity {
     private final String PASSWORD = "1234";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) 
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -27,13 +29,18 @@ public class Login extends AppCompatActivity {
         password = (TextView) findViewById(R.id.txtPassword);
         login = (Button) findViewById(R.id.buttonLogin);
 
-        login.setOnClickListener(new View.OnClickListener() {
+        login.setOnClickListener(new View.OnClickListener() 
+        {
             @Override
-            public void onClick(View view) {
-                if(user.getText().toString().equals(USER) && password.getText().toString().equals(PASSWORD)) {
+            public void onClick(View view) 
+            {
+                if(user.getText().toString().equals(USER) && password.getText().toString().equals(PASSWORD)) 
+                {
                     Intent intent = new Intent(Login.this, MainActivity.class);
                     startActivity(intent);
-                } else {
+                } 
+                else 
+                {
                     Toast.makeText(getApplicationContext(), "Datos erroneos. Intente nuevamente", Toast.LENGTH_SHORT).show();
                 }
             }
