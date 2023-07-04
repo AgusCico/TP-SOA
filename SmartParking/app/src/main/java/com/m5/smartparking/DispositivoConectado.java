@@ -32,7 +32,8 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 
-public class DispositivoConectado extends Activity implements SensorEventListener, CompoundButton.OnCheckedChangeListener {
+public class DispositivoConectado extends Activity implements SensorEventListener, CompoundButton.OnCheckedChangeListener 
+{
 
 
     private final static float ACC = 13;
@@ -59,7 +60,8 @@ public class DispositivoConectado extends Activity implements SensorEventListene
     //-------------------------------------------
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) 
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dispositivo_conectado);
 
@@ -73,16 +75,20 @@ public class DispositivoConectado extends Activity implements SensorEventListene
         openBarrier = (Button) findViewById(R.id.abrirBarrera);
 
         //-----------------------------------------
-        bluetoothIn = new Handler() {
-            public void handleMessage(android.os.Message msg) {
-                if (msg.what == handlerState) {
+        bluetoothIn = new Handler() 
+        {
+            public void handleMessage(android.os.Message msg)
+             {
+                if (msg.what == handlerState) 
+                {
                     char MyCaracter = (char) msg.obj;
 
                     String str = String.valueOf(MyCaracter);
 
                     Log.i("VALOR RECIBIDO", str);
 
-                    switch (MyCaracter) {
+                    switch (MyCaracter) 
+                    {
                         case 'a':
                             Log.i("ENTRA", "1");
                             txtSpot1.setText("LIBRE");
@@ -115,9 +121,11 @@ public class DispositivoConectado extends Activity implements SensorEventListene
         btAdapter = BluetoothAdapter.getDefaultAdapter(); // get Bluetooth adapter
         VerificarEstadoBT();
 
-        openBarrier.setOnClickListener(new View.OnClickListener() {
+        openBarrier.setOnClickListener(new View.OnClickListener() 
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) 
+            {
                 MyConexionBT.write("b");
             }
         });
@@ -141,32 +149,32 @@ public class DispositivoConectado extends Activity implements SensorEventListene
         //Setea la direccion MAC
         BluetoothDevice device = btAdapter.getRemoteDevice(address);
 
-        try {
+        try 
+        {
             btSocket = createBluetoothSocket(device);
-        } catch (IOException e) {
+        }
+        catch (IOException e) 
+        {
             Toast.makeText(getBaseContext(), "La creacción del Socket fallo", Toast.LENGTH_LONG).show();
         }
         // Establece la conexión con el socket Bluetooth.
-        try {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+        try 
+        {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) 
+            {
                 btSocket.connect();
                 Toast.makeText(getBaseContext(), "CONEXION EXITOSA", Toast.LENGTH_SHORT).show();
-
-                //return;
             }
 
-            //btSocket.connect();
-        } catch (IOException e) {
-            try {
+        } 
+        catch (IOException e) 
+        {
+            try 
+            {
                 btSocket.close();
-            } catch (IOException e2) {
+            } 
+            catch (IOException e2) 
+            {
             }
         }
         MyConexionBT = new ConnectedThread(btSocket);
@@ -191,7 +199,8 @@ public class DispositivoConectado extends Activity implements SensorEventListene
         }
         try { // Cuando se sale de la aplicación esta parte permite que no se deje abierto el socket
             btSocket.close();
-        } catch (IOException e2) {
+        }
+         catch (IOException e2) {
         }
     }
 
@@ -252,33 +261,32 @@ public class DispositivoConectado extends Activity implements SensorEventListene
     }
 
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-        }
+    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException 
+    {
         return device.createRfcommSocketToServiceRecord(BTMODULEUUID);
-        //creates secure outgoing connecetion with BT device using UUID
     }
 
     //Comprueba que el dispositivo Bluetooth
     //está disponible y solicita que se active si está desactivado
-    private void VerificarEstadoBT() {
+    private void VerificarEstadoBT() 
+    {
 
-        if (btAdapter == null) {
+        if (btAdapter == null) 
+        {
             Toast.makeText(getBaseContext(), "El dispositivo no soporta bluetooth", Toast.LENGTH_LONG).show();
-        } else {
-            if (btAdapter.isEnabled()) {
-            } else {
+        } 
+        else
+        {
+            if (btAdapter.isEnabled()) 
+            {
+                Log.i("Estado Bluetooth", "Activado");
+            } 
+            else 
+            {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) 
+                {
                     startActivityForResult(enableBtIntent, 1);
-                    //return;
                 }
 
             }
@@ -299,7 +307,8 @@ public class DispositivoConectado extends Activity implements SensorEventListene
             {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
-            } catch (IOException e) { }
+            }
+            catch (IOException e) { }
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
         }
@@ -308,12 +317,16 @@ public class DispositivoConectado extends Activity implements SensorEventListene
         {
             byte[] byte_in = new byte[1];
             // Se mantiene en modo escucha para determinar el ingreso de datos
-            while (true) {
-                try {
+            while (true) 
+            {
+                try 
+                {
                     mmInStream.read(byte_in);
                     char ch = (char) byte_in[0];
                     bluetoothIn.obtainMessage(handlerState, ch).sendToTarget();
-                } catch (IOException e) {
+                } 
+                catch (IOException e) 
+                {
                     break;
                 }
             }
@@ -322,7 +335,8 @@ public class DispositivoConectado extends Activity implements SensorEventListene
         //Envio de trama
         public void write(String input)
         {
-            try {
+            try 
+            {
                 mmOutStream.write(input.getBytes());
             }
             catch (IOException e)
