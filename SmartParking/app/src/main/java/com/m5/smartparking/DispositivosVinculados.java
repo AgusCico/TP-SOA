@@ -29,7 +29,7 @@ public class DispositivosVinculados extends AppCompatActivity
     private static final String TAG = "DispositivosVinculados";
     // Declaracion de ListView
     ListView IdLista;
-    // String que se enviara a la actividad principal, mainactivity
+    // String que se enviara a la actividad DispositivoConectado
     public static String EXTRA_DEVICE_ADDRESS = "device_address";
     // Declaracion de campos
     private BluetoothAdapter mBtAdapter;
