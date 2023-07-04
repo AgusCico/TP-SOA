@@ -1,5 +1,3 @@
-//#include <Servo.h>
-
 #include <PWMServo.h>
 
 #include <SoftwareSerial.h>
@@ -33,7 +31,7 @@
 
 #define CANTIDAD_LUZ_MINIMA 300
 #define BOTON_PULSAR 2
-//SERVO_PIN_B 10
+//El Servo se encuentra en el pin 10 (SERVO_PIN_B )
 
 #define BARRERA_BAJA 90
 #define BARRERA_ALTA 0
@@ -57,7 +55,6 @@
 #define EVENTO_DETECTA_LUZ_EXTERIOR 18
 #define EVENTO_DETECTA_AUTO_ESTACIONADO 19
 
-// #define constantes de trabajo
 #define CANTIDAD_SLOT_DISPONIBLE 2
 
 #define BT_ABRIR_BARRERA 98 // b
