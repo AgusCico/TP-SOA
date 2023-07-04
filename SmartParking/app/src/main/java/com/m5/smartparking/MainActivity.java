@@ -31,7 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity 
+{
 
     private TextView txtStatusBluetooth;
     private Button buttonActivate;
@@ -40,15 +41,18 @@ public class MainActivity extends Activity {
     private ProgressDialog mProgressDlg;
     public static final int MULTIPLE_PERMISSIONS = 10;
 
-    String[] permissions = new String[]{
+    String[] permissions = new String[]
+    {
             Manifest.permission.BLUETOOTH,
             Manifest.permission.BLUETOOTH_ADMIN,
             Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.ACCESS_COARSE_LOCATION};
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
 
     @Override
     @SuppressLint("MissingPermission")
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) 
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -60,23 +64,28 @@ public class MainActivity extends Activity {
         //Se crea un adaptador para poder manejar el bluetooth del celular
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        buttonActivate.setOnClickListener(new View.OnClickListener() {
+        buttonActivate.setOnClickListener(new View.OnClickListener() 
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) 
+            {
                 Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(intent, 1000);
             }
         });
-        buttonSearchDevices.setOnClickListener(new View.OnClickListener() {
+        buttonSearchDevices.setOnClickListener(new View.OnClickListener() 
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) 
+            {
                 Intent intent = new Intent(MainActivity.this, DispositivosVinculados.class);
                 startActivity(intent);
 
             }
         });
 
-        if(checkPermissions()) {
+        if(checkPermissions()) 
+        {
             Log.i("PERMISSIONS","TRUE");
             enableComponent();
         }
@@ -85,14 +94,20 @@ public class MainActivity extends Activity {
     protected void enableComponent()
     {
         //se determina si existe bluetooth en el celular
-        if (mBluetoothAdapter == null) {
+        if (mBluetoothAdapter == null) 
+        {
             //si el celular no soporta bluetooth
             showUnsupported();
-        } else {
+        } 
+        else 
+        {
             //se determina si esta activado el bluethoot
-            if (mBluetoothAdapter.isEnabled()) {
+            if (mBluetoothAdapter.isEnabled()) 
+            {
                 showEnabled();
-            } else {
+            } 
+            else 
+            {
                 showDisabled();
             }
         }
@@ -108,9 +123,11 @@ public class MainActivity extends Activity {
         registerReceiver(mReceiver, filter);
     }
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() 
+    {
         @SuppressLint("MissingPermission")
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent) 
+        {
 
             //A traves del Intent obtengo el evento de Bluetooth que informo el broadcast del SO
             String action = intent.getAction();
@@ -118,14 +135,18 @@ public class MainActivity extends Activity {
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
             //Si cambio de estado el Bluetooth(Activado/desactivado)
-            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) 
+            {
                 //Obtengo el parametro, aplicando un Bundle, que me indica el estado del Bluetooth
                 final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
 
-                if (state == BluetoothAdapter.STATE_ON) {
+                if (state == BluetoothAdapter.STATE_ON) 
+                {
                     Log.i("BLUETOOTH", "ACTIVADO");
                     showEnabled();
-                } else {
+                } 
+                else 
+                {
                     Log.i("BLUETOOTH", "DESACTIVADO");
                     showDisabled();
                 }
@@ -133,7 +154,8 @@ public class MainActivity extends Activity {
         }
     };
 
-    private void showEnabled() {
+    private void showEnabled() 
+    {
         Log.i("BLUETOOTH","Habilitado");
         txtStatusBluetooth.setText("Bluetooth Habilitado");
         txtStatusBluetooth.setTextColor(Color.parseColor("#323232"));
@@ -142,7 +164,8 @@ public class MainActivity extends Activity {
         buttonSearchDevices.setEnabled(true);
     }
 
-    private void showDisabled() {
+    private void showDisabled() 
+    {
         Log.i("BLUETOOTH","Deshabilitado");
         txtStatusBluetooth.setText("Bluetooth Deshabilitado");
         txtStatusBluetooth.setTextColor(Color.RED);
@@ -151,7 +174,8 @@ public class MainActivity extends Activity {
         buttonSearchDevices.setEnabled(false);
     }
 
-    private void showUnsupported() {
+    private void showUnsupported() 
+    {
         Log.i("BLUETOOTH","No soportado");
         txtStatusBluetooth.setText("Bluetooth Deshabilitado");
         txtStatusBluetooth.setTextColor(Color.RED);
@@ -160,23 +184,28 @@ public class MainActivity extends Activity {
     }
 
     //Metodo que chequea si estan habilitados los permisos
-    private  boolean checkPermissions() {
+    private  boolean checkPermissions() 
+    {
         int result;
         List<String> listPermissionsNeeded = new ArrayList<>();
 
         //Se chequea si la version de Android es menor a la 6
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) 
+        {
             return true;
         }
 
-        for (String p:permissions) {
+        for (String p:permissions) 
+        {
             result = ContextCompat.checkSelfPermission(this,p);
-            if (result != PackageManager.PERMISSION_GRANTED) {
+            if (result != PackageManager.PERMISSION_GRANTED) 
+            {
                 listPermissionsNeeded.add(p);
             }
         }
 
-        if (!listPermissionsNeeded.isEmpty()) {
+        if (!listPermissionsNeeded.isEmpty()) 
+        {
             ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), MULTIPLE_PERMISSIONS);
             return false;
         }
@@ -185,19 +214,26 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) 
+    {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case MULTIPLE_PERMISSIONS: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permissions granted.
-                    enableComponent(); // Now you call here what ever you want :)
-                } else {
+        switch (requestCode) 
+        {
+            case MULTIPLE_PERMISSIONS: 
+            {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) 
+                {
+                   
+                    enableComponent(); 
+                } 
+                else 
+                {
                     String perStr = "";
-                    for (String per : permissions) {
+                    for (String per : permissions) 
+                    {
                         perStr += "\n" + per;
                     }
-                    // permissions list of don't granted permission
+                    
                     Toast.makeText(this, "ATENCION: La aplicacion no funcionara " +
                             "correctamente debido a la falta de Permisos", Toast.LENGTH_LONG).show();
                 }
