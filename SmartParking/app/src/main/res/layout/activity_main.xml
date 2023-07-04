@@ -1,35 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/fondo_app"
+    android:background="#EAE9E9"
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="350dp"
-        android:fontFamily="sans-serif-condensed-light"
-        android:gravity="center"
-        android:text="Smart Parking"
-        android:textColor="@color/white"
-        android:textSize="45sp"
-        android:textStyle="bold"
-        tools:ignore="MissingConstraints" />
-
-    <TextView
         android:id="@+id/statusBluetooth"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginBottom="30dp"
         android:text="Status Bluetooth"
         android:textAlignment="center"
-        android:textColor="@color/white"
+        android:textColor="#323232"
+        app:layout_constraintBottom_toTopOf="@+id/buttonActivate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         tools:ignore="MissingConstraints"
         tools:textSize="20pt" />
 
@@ -37,24 +27,40 @@
         android:id="@+id/buttonActivate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/statusBluetooth"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginBottom="10dp"
+        android:background="#F05D22"
         android:padding="20dp"
         android:text="Activar Bluetooth"
+        android:textColor="@color/white"
         android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonSearchDevices"
+        app:layout_constraintStart_toStartOf="parent"
         tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/buttonSearchDevices"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonActivate"
+        android:layout_height="67dp"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginBottom="40dp"
+        android:background="#F05D22"
         android:padding="20dp"
-        android:text="Buscar Dispositivos"
+        android:text="Seleccionar Dispositivo"
+        android:textColor="@color/white"
         android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         tools:ignore="MissingConstraints" />
 
-</RelativeLayout>
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/smart_parking" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
