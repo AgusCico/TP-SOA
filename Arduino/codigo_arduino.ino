@@ -33,8 +33,7 @@
 
 #define CANTIDAD_LUZ_MINIMA 300
 #define BOTON_PULSAR 2
-//#define SENIAL_SERVO 3
-//SERVO_PIN_B
+//SERVO_PIN_B 10
 
 #define BARRERA_BAJA 90
 #define BARRERA_ALTA 0
@@ -122,26 +121,9 @@ bool detectarPresencia(int trigger, int echo)
 // FUNCION PARA ENVIO DE DATOS DEL SENSOR HACIA BLUETOOTH
 void informarSlot1PorBT()
 {
-  //char distancia[6] = "";
-  //itoa(0.01723 * distanciaAuto(TRIGGER_SENSOR_ESTACION1, ECHO_SENSOR_ESTACION1), distancia, 6);
-  //BTserial.print(distancia);
   Serial.println(btstring);
   BTserial.print(btstring);
 }
-
-// FUNCION PARA ENVIO DE DATOS DEL SENSOR HACIA BLUETOOTH
-void informarSlot2PorBT()
-{
-  if (BTserial.available())
-  {
-    int distancia = 0.01723 * distanciaAuto(TRIGGER_SENSOR_ESTACION2, ECHO_SENSOR_ESTACION2);
-    Serial.print(distancia);
-    Serial.println(" cm");
-    BTserial.println(distancia);
-    delay(1000);
-  }
-}
-// -----------------------
 
 // Función para verificar si un auto ocupa el slot
 bool obtenerEntraAuto()
@@ -558,12 +540,9 @@ void setup()
   pinMode(LED_LUZ_EXTERIOR, OUTPUT);
   pinMode(LED_HAY_AUTO_ESTACION1, OUTPUT);
   pinMode(LED_HAY_AUTO_ESTACION2, OUTPUT);
-  // pinMode(LED_BOTON, OUTPUT); // se declara el pin 2 como salida
   pinMode(BOTON_PULSAR, INPUT); // se declara el pin 12 como entrada
-  // pinMode(LED_BUILTIN, OUTPUT);
   servo_9.attach(SERVO_PIN_B);
   servo_9.write(BARRERA_BAJA);
-  // delay(5000);
 
   // Encendemos los Leds de indicadores de estacionamiento (Estacionamiento libre)
   digitalWrite(LED_HAY_AUTO_ESTACION1, HIGH);
