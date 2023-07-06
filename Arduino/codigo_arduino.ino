@@ -250,8 +250,7 @@ void tomar_evento()
   bool entraAuto;
   int accionBT = 0;
 
-  // BTserial.listen();
-    if (BTserial.available())
+  if (BTserial.available())
   {
     accionBT = BTserial.read();
     Serial.print("Accion BT: ");
